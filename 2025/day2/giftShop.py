@@ -1,4 +1,3 @@
-import re
 def simpleInvalid(start, end):
     sum = 0
     for id in range(int(start), int(end)+1):
@@ -18,11 +17,12 @@ def complexInvalid(start, end):
     sum = 0
     for id in range(int(start), int(end)+1):
         idStr = str(id)
-        for i in range(1, len(idStr)):
+        for i in range(1, len(idStr)//2 + 1):
             part = idStr[:i]
-            pattern = re.compile(part)
-            found = pattern.findall(idStr)
-            if len(found) * len(part) == len(idStr):
+            if len(idStr) % len(part) != 0:
+                continue
+            div = len(idStr) // len(part)
+            if  part * div == idStr:
                 sum += id
                 break
 
