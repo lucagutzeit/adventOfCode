@@ -7,7 +7,7 @@ def max(list: list[int], start=0, stop=-1):
             idxMax = i
     return (idxMax, list[idxMax])
 
-def main():
+def maxNumber(length):
     sum = 0
     with open("2025\\day3\\input.txt", "r") as file:
         for line in file:
@@ -16,7 +16,7 @@ def main():
             concat = ""
             lastIdx = -1
 
-            for i in range(11, -1, -1):
+            for i in range(length-1, -1, -1):
                 if len(arr[lastIdx+1:]) == i+1:
                     concat += str(reduce(lambda x, y: int(str(x) + str(y)), arr[lastIdx+1:]))
                     break
@@ -25,8 +25,8 @@ def main():
                 concat += str(num)
 
             sum += int(concat)
-
-    print(sum)
+    return sum
 
 if __name__ == "__main__":
-    main()
+    print(f"2: {maxNumber(2)}")
+    print(f"12: {maxNumber(12)}")
