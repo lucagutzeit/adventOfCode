@@ -1,53 +1,63 @@
-# Returns the number of neighbor fields increased do more than 3. If change is negative returns 0.
-def modifyNeighbors(col, row, adjacency: list[list[int]], change = 1) -> int:
-    moreThan3 = 0
-    width = len(adjacency[0])
-    for horizontal in range(col-1, col+2, 1):
-        # Out of bounds check
-        if 0 > horizontal or horizontal >= width:
-            continue
-        for vertical in range(row-1, row+2, 1):
-            # Out of bounds check 
-            if 0 > vertical:
-                continue
-            # Not influence itself
-            if vertical == row and horizontal == col:
-                continue
-            # Only increase where it matters
-            if adjacency[vertical][horizontal] == -1 or adjacency[vertical][horizontal] >= 4:
-                continue
-            adjacency[vertical][horizontal] += 1
-            if adjacency[vertical][horizontal] > 3:
-                moreThan3+=1
-    return moreThan3
+mods = [(x, y) for x in range(-1, 2) for y in range(-1, 2)]
+mods.pop(mods.index((0, 0)))
 
-def getRemovablePapers() -> int:
-    moreThan3 = 0
-    countPaper = 0
-    adjacency: list[list[int]] = []
-    with open("2025\\day4\\input.txt", "r") as file:
-        width = len(file.readline().strip())
-        file.seek(0)
-        adjacency.append([0]*width)
-        for row, line in enumerate(file):
-            line = line.strip()
-            # Adding next row preamptivly to enable count. Count will be overwritten if not paperroll. Additional row removed at the end.
-            adjacency.append([0]*width)
-            for col, char in enumerate(line):
-                # Only increase neighbors if field is paperroll
-                if char != "@":
-                    adjacency[row][col] = -1
-                    continue
-                # Lookahead to right neighbor to prevent increasing it above 3
-                if col < width-1 and line[col+1] != "@":
-                    adjacency[row][col+1] = -1
-                countPaper += 1
-                moreThan3 += modifyNeighbors(col, row, adjacency)
-        adjacency.pop()
-        return countPaper - moreThan3
+class diagram():
+    diagram: list[list[str]] = []
+    rows = 0
+    columns = 0
+    def addRow(self, row: list[str]):
+        if not len(self.diagram) == 0:
+            assert len(row) == len(self.diagram[0])
+            self.columns = len(row)
+        
+        self.diagram.append(row)
+        self.rows += 1
+
+    def countNeigbours(self, row: int, col: int):
+        count = 0
+
+        for x, y in mods:
+            vertical = row + x
+            horizontal = col + y
+            if not (0 <= horizontal < self.columns):
+                continue
+            if not (0 <= vertical < self.rows):
+                continue
+            if self.diagram[vertical][horizontal] == "@":
+                count += 1
+        
+        return count
+    
+    def evaluate(self, loop = False):
+        movablePaper = 0
+        moved = True
+        while moved:
+            moved = False
+            for row in range(self.rows):
+                for col in range(self.columns):
+                    if self.diagram[row][col] == ".":
+                        continue
+                    if self.countNeigbours(row, col) < 4:
+                        movablePaper += 1
+                        if loop:
+                            moved = True
+                            self.diagram[row][col] = "."
+            if not loop:
+                return movablePaper
+
+        return movablePaper
+
+    def getDiagram(self):
+        return self.diagram
+    
 
 if __name__ == "__main__":
-    print(f"Removable paperroll: {getRemovablePapers()}")
+    plan = diagram()
+    with open("2025\\day4\\input.txt", "r") as file:
+        for line in file:
+            line = line.strip()
+            plan.addRow(list(line))
 
-
+    print(plan.evaluate(True))
+    
 
