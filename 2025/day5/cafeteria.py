@@ -25,9 +25,6 @@ class Ranges:
 
         # New range ends before first starts
         i = len(self.ranges)
-        if range.end < self.ranges[0].start:
-            self.ranges.insert(0, range)
-            return
     
         for i, r in enumerate(self.ranges):
             if range.end < r.start:
